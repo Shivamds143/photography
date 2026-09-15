@@ -1,0 +1,6 @@
+{
+  "name": "Aura Photography & Booking Studio",
+  "description": "Professional photography portfolio, gallery showcase, and client booking platform with custom dashboard and admin management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
