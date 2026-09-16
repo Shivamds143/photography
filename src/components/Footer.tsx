@@ -19,29 +19,26 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="border-b border-[#181b24] bg-[#0c0e12] py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#d4af37]/10 text-[#d4af37]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#d4af37]/10 text-[#d4af37]">
               <Award className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Award-Winning Fine Art Photography</p>
-              <p className="text-xs text-slate-500">Ranked Top 10 Wedding & Editorial Storytellers 2024-2026</p>
+              <p className="text-sm font-semibold text-white">Award-Winning Fine Art Photography Atelier</p>
+              <p className="text-xs text-slate-400">Ranked Top 10 Wedding &amp; Editorial Storytellers 2024–2026</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <button
-              id="footer-open-guide-btn"
-              onClick={onOpenGuide}
-              className="flex items-center space-x-1.5 rounded-lg border border-[#d4af37]/40 bg-[#171510] px-3.5 py-2 text-xs font-semibold text-[#d4af37] transition-all hover:bg-[#d4af37]/10"
+              onClick={() => setCurrentPage('booking')}
+              className="flex items-center space-x-2 rounded-xl bg-gradient-to-r from-[#d4af37] via-[#c59e2b] to-[#b38c20] px-4 py-2 text-xs font-bold tracking-wider text-black uppercase shadow-md shadow-[#d4af37]/20 transition-all hover:brightness-110 active:scale-95"
             >
-              <ShieldCheck className="h-4 w-4" />
-              <span>Third Year CS Project Guide & Docs</span>
+              <span>Inquire for Dates</span>
             </button>
             <button
-              id="footer-open-db-btn"
-              onClick={onOpenDbModal}
-              className="flex items-center space-x-1.5 rounded-lg border border-[#272b38] bg-[#12141a] px-3.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:text-white"
+              onClick={() => setCurrentPage('contact')}
+              className="flex items-center space-x-1.5 rounded-xl border border-[#272b38] bg-[#12141a] px-3.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:border-[#d4af37]/40 hover:text-white"
             >
-              <span>Supabase / Database Status</span>
+              <span>Contact Atelier</span>
             </button>
           </div>
         </div>
@@ -173,14 +170,30 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between border-t border-[#181b24] pt-8 text-xs text-slate-500 sm:flex-row">
           <p>© {new Date().getFullYear()} Aura Studio. All photographic rights reserved.</p>
-          <div className="mt-4 flex flex-wrap items-center gap-4 sm:mt-0">
-            <span>Third Year Computer Science Project</span>
-            <span>•</span>
-            <span className="text-slate-400">Next.js & Supabase Architecture</span>
+          <div className="mt-4 flex flex-wrap items-center gap-3 sm:mt-0">
+            {onOpenGuide && (
+              <button
+                id="footer-open-guide-btn"
+                onClick={onOpenGuide}
+                className="text-slate-500 hover:text-[#d4af37] transition-colors text-[11px]"
+              >
+                Setup &amp; DB Guide
+              </button>
+            )}
+            {onOpenGuide && onOpenDbModal && <span>•</span>}
+            {onOpenDbModal && (
+              <button
+                id="footer-open-db-btn"
+                onClick={onOpenDbModal}
+                className="text-slate-500 hover:text-[#d4af37] transition-colors text-[11px]"
+              >
+                Database Status
+              </button>
+            )}
             <span>•</span>
             <button
               onClick={() => setCurrentPage('admin-login')}
-              className="text-slate-400 hover:text-[#d4af37] transition-colors"
+              className="text-slate-400 hover:text-[#d4af37] transition-colors text-[11px]"
             >
               Admin Portal
             </button>

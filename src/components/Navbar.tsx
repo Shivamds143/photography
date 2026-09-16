@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Calendar, User, Shield, Menu, X, ChevronDown, LogOut, Database, HelpCircle } from 'lucide-react';
 import { PageView, UserProfile } from '../types';
-import { isSupabaseConfigured } from '../lib/supabase';
 
 interface NavbarProps {
   currentPage: PageView;
   setCurrentPage: (page: PageView) => void;
   currentUser: UserProfile | null;
   onLogout: () => void;
-  onOpenGuide: () => void;
-  onOpenDbModal: () => void;
+  onOpenGuide?: () => void;
+  onOpenDbModal?: () => void;
   onSelectCategory?: (slug: string) => void;
 }
 
@@ -23,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks: { label: string; page: PageView }[] = [
     { label: 'Home', page: 'home' },
@@ -32,6 +32,17 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'Contact', page: 'contact' }
   ];
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleNavClick = (page: PageView) => {
     setCurrentPage(page);
     setMobileMenuOpen(false);
@@ -40,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#232733] bg-[#0c0d10]/90 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-[#202430] bg-[#0c0d10]/95 backdrop-blur-md transition-all">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <button
@@ -48,14 +59,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => handleNavClick('home')}
           className="group flex items-center space-x-3 text-left focus:outline-none"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#d4af37] to-[#9a7822] p-0.5 shadow-lg shadow-[#d4af37]/10 transition-transform group-hover:scale-105">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#d4af37] via-[#c59e2b] to-[#8a681c] p-0.5 shadow-lg shadow-[#d4af37]/10 transition-transform duration-300 group-hover:scale-105">
             <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#0c0d10]">
-              <Camera className="h-5 w-5 text-[#d4af37] transition-transform group-hover:rotate-12" />
+              <Camera className="h-5 w-5 text-[#d4af37] transition-transform duration-300 group-hover:rotate-12" />
             </div>
           </div>
           <div>
-            <span className="font-serif text-2xl font-bold tracking-wider text-white">AURA</span>
-            <span className="ml-1 text-xs font-medium tracking-[0.25em] text-[#d4af37] uppercase">STUDIO</span>
+            <div className="flex items-center space-x-1.5">
+              <span className="font-serif text-2xl font-bold tracking-wider text-white">AURA</span>
+              <span className="text-xs font-semibold tracking-[0.25em] text-[#d4af37] uppercase">STUDIO</span>
+            </div>
             <p className="text-[10px] tracking-widest text-slate-400 uppercase">Fine-Art & Editorial</p>
           </div>
         </button>
@@ -77,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 {item.label}
                 {isActive && (
-                  <span className="absolute inset-x-4 bottom-0 h-0.5 bg-gradient-to-r from-[#d4af37] to-[#e6ca65]" />
+                  <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-gradient-to-r from-[#d4af37] to-[#e6ca65]" />
                 )}
               </button>
             );
@@ -86,34 +99,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Action Controls */}
         <div className="hidden items-center space-x-3 md:flex">
-          {/* Documentation Guide button */}
-          <button
-            id="nav-project-guide-btn"
-            onClick={onOpenGuide}
-            className="flex items-center space-x-1.5 rounded-lg border border-[#2b3040] bg-[#141720] px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-[#d4af37]/40 hover:text-white"
-            title="Third Year CS Project & Setup Guide"
-          >
-            <HelpCircle className="h-3.5 w-3.5 text-[#d4af37]" />
-            <span>Setup & DB Guide</span>
-          </button>
-
-          {/* Database status pill */}
-          <button
-            id="nav-db-status-btn"
-            onClick={onOpenDbModal}
-            className="flex items-center space-x-1.5 rounded-lg border border-[#2b3040] bg-[#141720] px-2.5 py-1.5 text-[11px] font-medium text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200"
-            title="Database Configuration"
-          >
-            <span className={`h-2 w-2 rounded-full ${isSupabaseConfigured ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-amber-400 animate-pulse'}`} />
-            <Database className="h-3 w-3 text-slate-400" />
-            <span>{isSupabaseConfigured ? 'Supabase Live' : 'Demo Mode'}</span>
-          </button>
-
           {/* Book a Shoot CTA */}
           <button
             id="nav-book-cta-btn"
             onClick={() => handleNavClick('booking')}
-            className="flex items-center space-x-2 rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b38c20] px-4 py-2 text-xs font-semibold tracking-wider text-black uppercase shadow-md shadow-[#d4af37]/20 transition-all hover:brightness-110 active:scale-95"
+            className="flex items-center space-x-2 rounded-xl bg-gradient-to-r from-[#d4af37] via-[#c59e2b] to-[#b38c20] px-4 py-2 text-xs font-bold tracking-wider text-black uppercase shadow-md shadow-[#d4af37]/20 transition-all hover:brightness-110 active:scale-95"
           >
             <Calendar className="h-3.5 w-3.5 text-black" />
             <span>Book a Shoot</span>
@@ -121,69 +111,125 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Profile / Login */}
           {currentUser ? (
-            <div className="relative">
-              <button
-                id="nav-user-dropdown-toggle"
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center space-x-2 rounded-lg border border-[#272b38] bg-[#13151c] p-1.5 pr-2.5 text-xs text-slate-200 transition-colors hover:border-slate-600"
-              >
-                <img
-                  src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80'}
-                  alt={currentUser.full_name}
-                  className="h-7 w-7 rounded-md object-cover ring-1 ring-[#d4af37]/40"
-                />
-                <span className="max-w-[90px] truncate font-medium">{currentUser.full_name.split(' ')[0]}</span>
-                {currentUser.role === 'admin' && (
-                  <span className="rounded bg-[#d4af37]/20 px-1 py-0.5 text-[9px] font-bold text-[#d4af37] uppercase">
-                    Admin
-                  </span>
-                )}
-                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-              </button>
-
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-[#272b38] bg-[#13151c] p-2 shadow-2xl ring-1 ring-black/40">
-                  <div className="border-b border-[#232733] px-3 py-2">
-                    <p className="text-xs font-medium text-white">{currentUser.full_name}</p>
-                    <p className="truncate text-[11px] text-slate-400">{currentUser.email}</p>
-                    <span className="mt-1 inline-block rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-300">
-                      Role: <strong className="text-[#d4af37]">{currentUser.role}</strong>
+            <div className="relative" ref={dropdownRef}>
+              {currentUser.role === 'admin' ? (
+                /* Admin trigger */
+                <button
+                  id="nav-user-dropdown-toggle"
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-2 rounded-xl border border-[#d4af37]/40 bg-[#16140e] p-1.5 pr-2.5 text-xs text-slate-200 transition-all hover:border-[#d4af37] hover:bg-[#1f1a10]"
+                  title="Admin Dashboard"
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#d4af37] text-black">
+                    <Shield className="h-4 w-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block max-w-[90px] truncate text-xs font-semibold text-white">
+                      {currentUser.full_name.split(' ')[0]}
                     </span>
+                    <span className="block text-[9px] font-bold text-[#d4af37] tracking-wider uppercase">
+                      Admin
+                    </span>
+                  </div>
+                  <ChevronDown className={`h-3.5 w-3.5 text-[#d4af37] transition-transform duration-200 ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+              ) : (
+                /* Customer trigger */
+                <button
+                  id="nav-user-dropdown-toggle"
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-2 rounded-xl border border-[#272b38] bg-[#13151c] p-1.5 pr-2.5 text-xs text-slate-200 transition-all hover:border-[#d4af37]/50 hover:bg-[#181b26]"
+                  title="Profile / Dashboard"
+                >
+                  <img
+                    src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80'}
+                    alt={currentUser.full_name}
+                    className="h-7 w-7 rounded-lg object-cover ring-1 ring-[#d4af37]/40"
+                  />
+                  <div className="text-left">
+                    <span className="block max-w-[90px] truncate text-xs font-semibold text-white">
+                      {currentUser.full_name.split(' ')[0]}
+                    </span>
+                    <span className="block text-[9px] text-[#d4af37] tracking-wider uppercase">
+                      Dashboard
+                    </span>
+                  </div>
+                  <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+              )}
+
+              {/* User Dropdown */}
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-60 origin-top-right rounded-2xl border border-[#272b38] bg-[#12141c]/95 p-2 shadow-2xl backdrop-blur-xl ring-1 ring-black/50">
+                  <div className="border-b border-[#232733] px-3.5 py-2.5">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-white truncate">{currentUser.full_name}</p>
+                      {currentUser.role === 'admin' && (
+                        <span className="rounded bg-[#d4af37]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#d4af37] uppercase">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    <p className="truncate text-[11px] text-slate-400">{currentUser.email}</p>
                   </div>
 
                   {currentUser.role === 'admin' ? (
-                    <div className="py-1">
+                    <div className="py-1.5 space-y-0.5">
                       <button
                         id="nav-admin-dashboard-link"
                         onClick={() => handleNavClick('admin-dashboard')}
-                        className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-xs text-slate-200 hover:bg-[#1f2330] hover:text-[#d4af37]"
+                        className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-200 hover:bg-[#1c202c] hover:text-[#d4af37] transition-colors"
                       >
                         <Shield className="h-3.5 w-3.5 text-[#d4af37]" />
                         <span>Admin Dashboard</span>
                       </button>
                       <button
                         id="nav-admin-bookings-link"
-                        onClick={() => handleNavClick('admin-bookings')}
-                        className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-xs text-slate-200 hover:bg-[#1f2330]"
+                        onClick={() => handleNavClick('admin-dashboard')}
+                        className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-200 hover:bg-[#1c202c] transition-colors"
                       >
                         <Calendar className="h-3.5 w-3.5 text-slate-400" />
                         <span>Manage Bookings</span>
                       </button>
+                      {onOpenGuide && (
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            onOpenGuide();
+                          }}
+                          className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-300 hover:bg-[#1c202c] hover:text-white transition-colors"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Project & DB Guide</span>
+                        </button>
+                      )}
+                      {onOpenDbModal && (
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            onOpenDbModal();
+                          }}
+                          className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-300 hover:bg-[#1c202c] hover:text-white transition-colors"
+                        >
+                          <Database className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Database Settings</span>
+                        </button>
+                      )}
                     </div>
                   ) : (
-                    <div className="py-1">
+                    <div className="py-1.5 space-y-0.5">
                       <button
                         id="nav-customer-dashboard-link"
                         onClick={() => handleNavClick('customer-dashboard')}
-                        className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-xs text-slate-200 hover:bg-[#1f2330] hover:text-[#d4af37]"
+                        className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-200 hover:bg-[#1c202c] hover:text-[#d4af37] transition-colors"
                       >
                         <User className="h-3.5 w-3.5 text-[#d4af37]" />
-                        <span>My Dashboard</span>
+                        <span>Profile & Dashboard</span>
                       </button>
                       <button
                         id="nav-customer-bookings-link"
                         onClick={() => handleNavClick('customer-bookings')}
-                        className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-xs text-slate-200 hover:bg-[#1f2330]"
+                        className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-slate-200 hover:bg-[#1c202c] transition-colors"
                       >
                         <Calendar className="h-3.5 w-3.5 text-slate-400" />
                         <span>My Bookings</span>
@@ -198,7 +244,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setUserDropdownOpen(false);
                         onLogout();
                       }}
-                      className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-xs text-red-400 hover:bg-red-500/10"
+                      className="flex w-full items-center space-x-2.5 rounded-lg px-3.5 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
                     >
                       <LogOut className="h-3.5 w-3.5" />
                       <span>Sign Out</span>
@@ -208,58 +254,51 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
           ) : (
+            /* Logged-out user: Clean Login/Register button */
             <div className="flex items-center space-x-2">
               <button
                 id="nav-login-btn"
                 onClick={() => handleNavClick('login')}
-                className="rounded-lg border border-[#272b38] px-3.5 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+                className="flex items-center space-x-1.5 rounded-xl border border-[#272b38] bg-[#12141c] px-3.5 py-2 text-xs font-semibold text-slate-200 transition-all hover:border-[#d4af37]/60 hover:bg-[#181b24] hover:text-white"
               >
-                Sign In
-              </button>
-              <button
-                id="nav-admin-login-shortcut"
-                onClick={() => handleNavClick('admin-login')}
-                className="flex items-center space-x-1 rounded-lg bg-[#1a1d26] px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-[#d4af37]"
-                title="Admin Portal Login"
-              >
-                <Shield className="h-3 w-3" />
-                <span>Admin</span>
+                <User className="h-3.5 w-3.5 text-[#d4af37]" />
+                <span>Login / Register</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* Mobile Hamburger Toggle */}
+        {/* Mobile Hamburger Toggle & Compact Book CTA */}
         <div className="flex items-center space-x-2 md:hidden">
           <button
             id="nav-mobile-book-cta"
             onClick={() => handleNavClick('booking')}
-            className="rounded bg-[#d4af37] px-2.5 py-1.5 text-[11px] font-bold text-black uppercase"
+            className="rounded-lg bg-gradient-to-r from-[#d4af37] to-[#b38c20] px-3 py-1.5 text-xs font-bold text-black uppercase shadow-sm"
           >
             Book
           </button>
           <button
             id="nav-mobile-toggle-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-lg border border-[#272b38] bg-[#141720] p-2 text-slate-300 hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#272b38] bg-[#141720] text-slate-300 transition-colors hover:border-[#d4af37]/40 hover:text-white"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <X className="h-5 w-5 text-[#d4af37]" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-[#232733] bg-[#0c0d10] px-4 pt-3 pb-6 md:hidden">
+        <div className="border-b border-[#232733] bg-[#0c0d10] px-4 pt-3 pb-6 md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="space-y-1">
             {navLinks.map((item) => (
               <button
                 key={item.page}
                 onClick={() => handleNavClick(item.page)}
-                className={`flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-sm font-medium ${
+                className={`flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
                   currentPage === item.page
-                    ? 'bg-[#1a1d26] text-[#d4af37]'
+                    ? 'bg-[#181b24] text-[#d4af37]'
                     : 'text-slate-300 hover:bg-[#141720] hover:text-white'
                 }`}
               >
@@ -268,95 +307,130 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </div>
 
-          <div className="mt-4 border-t border-[#232733] pt-4 space-y-2">
+          <div className="mt-4 border-t border-[#232733] pt-4 space-y-3">
+            {/* Book a Shoot Full CTA */}
             <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenGuide();
-              }}
-              className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-4 py-2.5 text-xs text-slate-200"
+              onClick={() => handleNavClick('booking')}
+              className="flex w-full items-center justify-center space-x-2 rounded-xl bg-gradient-to-r from-[#d4af37] via-[#c59e2b] to-[#b38c20] py-3 text-xs font-bold tracking-wider text-black uppercase shadow-lg shadow-[#d4af37]/15"
             >
-              <HelpCircle className="h-4 w-4 text-[#d4af37]" />
-              <span>Third Year CS Project & Setup Guide</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenDbModal();
-              }}
-              className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-4 py-2.5 text-xs text-slate-300"
-            >
-              <Database className="h-4 w-4 text-slate-400" />
-              <span>Database Status ({isSupabaseConfigured ? 'Supabase Live' : 'Demo Mode'})</span>
+              <Calendar className="h-4 w-4 text-black" />
+              <span>Book a Shoot</span>
             </button>
 
             {currentUser ? (
-              <div className="pt-2">
-                <div className="rounded-lg bg-[#13151c] p-3 text-xs">
-                  <p className="font-semibold text-white">{currentUser.full_name}</p>
-                  <p className="text-[11px] text-slate-400">{currentUser.email}</p>
-                  <span className="mt-1 inline-block text-[10px] text-[#d4af37] font-mono uppercase">
-                    Role: {currentUser.role}
-                  </span>
+              <div className="rounded-xl border border-[#232733] bg-[#12141c] p-3.5">
+                <div className="flex items-center space-x-3">
+                  {currentUser.role === 'admin' ? (
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d4af37] text-black">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                  ) : (
+                    <img
+                      src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80'}
+                      alt={currentUser.full_name}
+                      className="h-9 w-9 rounded-lg object-cover ring-1 ring-[#d4af37]/40"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-semibold text-white text-xs truncate">{currentUser.full_name}</p>
+                      {currentUser.role === 'admin' && (
+                        <span className="rounded bg-[#d4af37]/20 px-1.5 py-0.2 text-[9px] font-bold text-[#d4af37] uppercase">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
+                  </div>
                 </div>
 
-                {currentUser.role === 'admin' ? (
-                  <div className="mt-2 space-y-1">
-                    <button
-                      onClick={() => handleNavClick('admin-dashboard')}
-                      className="w-full rounded-lg bg-[#1c202c] px-4 py-2 text-left text-xs font-medium text-[#d4af37]"
-                    >
-                      Admin Dashboard
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('admin-bookings')}
-                      className="w-full rounded-lg bg-[#141720] px-4 py-2 text-left text-xs text-slate-300"
-                    >
-                      Manage Bookings
-                    </button>
-                  </div>
-                ) : (
-                  <div className="mt-2 space-y-1">
-                    <button
-                      onClick={() => handleNavClick('customer-dashboard')}
-                      className="w-full rounded-lg bg-[#1c202c] px-4 py-2 text-left text-xs font-medium text-[#d4af37]"
-                    >
-                      Customer Dashboard
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('customer-bookings')}
-                      className="w-full rounded-lg bg-[#141720] px-4 py-2 text-left text-xs text-slate-300"
-                    >
-                      My Bookings
-                    </button>
-                  </div>
-                )}
+                <div className="mt-3 space-y-1.5 border-t border-[#1e222e] pt-3">
+                  {currentUser.role === 'admin' ? (
+                    <>
+                      <button
+                        onClick={() => handleNavClick('admin-dashboard')}
+                        className="flex w-full items-center space-x-2 rounded-lg bg-[#221e14] px-3.5 py-2.5 text-xs font-semibold text-[#d4af37]"
+                      >
+                        <Shield className="h-3.5 w-3.5" />
+                        <span>Admin Dashboard</span>
+                      </button>
+                      <button
+                        onClick={() => handleNavClick('admin-dashboard')}
+                        className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-3.5 py-2.5 text-xs text-slate-300"
+                      >
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        <span>Manage Bookings</span>
+                      </button>
+                      {onOpenGuide && (
+                        <button
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            onOpenGuide();
+                          }}
+                          className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-3.5 py-2.5 text-xs text-slate-300"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Project Setup Guide</span>
+                        </button>
+                      )}
+                      {onOpenDbModal && (
+                        <button
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            onOpenDbModal();
+                          }}
+                          className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-3.5 py-2.5 text-xs text-slate-300"
+                        >
+                          <Database className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Database Settings</span>
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleNavClick('customer-dashboard')}
+                        className="flex w-full items-center space-x-2 rounded-lg bg-[#1a1d26] px-3.5 py-2.5 text-xs font-medium text-[#d4af37]"
+                      >
+                        <User className="h-3.5 w-3.5" />
+                        <span>Profile & Dashboard</span>
+                      </button>
+                      <button
+                        onClick={() => handleNavClick('customer-bookings')}
+                        className="flex w-full items-center space-x-2 rounded-lg bg-[#141720] px-3.5 py-2.5 text-xs text-slate-300"
+                      >
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        <span>My Bookings</span>
+                      </button>
+                    </>
+                  )}
 
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onLogout();
-                  }}
-                  className="mt-3 flex w-full items-center justify-center space-x-2 rounded-lg bg-red-500/10 py-2 text-xs font-medium text-red-400"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  <span>Sign Out</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onLogout();
+                    }}
+                    className="flex w-full items-center justify-center space-x-2 rounded-lg bg-red-500/10 py-2.5 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors mt-2"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2 pt-2">
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
                 <button
                   onClick={() => handleNavClick('login')}
-                  className="rounded-lg border border-[#272b38] bg-[#141720] py-2 text-center text-xs font-medium text-white"
+                  className="flex items-center justify-center space-x-2 rounded-xl border border-[#272b38] bg-[#141720] py-2.5 text-center text-xs font-semibold text-white hover:border-[#d4af37]/40"
                 >
-                  Sign In
+                  <User className="h-3.5 w-3.5 text-[#d4af37]" />
+                  <span>Sign In</span>
                 </button>
                 <button
-                  onClick={() => handleNavClick('admin-login')}
-                  className="rounded-lg bg-[#1c202c] py-2 text-center text-xs font-medium text-[#d4af37]"
+                  onClick={() => handleNavClick('register')}
+                  className="flex items-center justify-center rounded-xl border border-[#d4af37]/30 bg-[#1a1710] py-2.5 text-center text-xs font-semibold text-[#d4af37] hover:bg-[#d4af37]/10"
                 >
-                  Admin Portal
+                  <span>Register</span>
                 </button>
               </div>
             )}

@@ -39,63 +39,63 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   return (
     <div className="w-full bg-[#0c0d10] text-[#f1f3f7]">
-      {/* 1. HERO SECTION (Full-Screen Photography Visual, Strong Headline, CTAs - NO LOGO ON HERO PHOTO) */}
-      <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden">
-        {/* Large photography visual background */}
+      {/* 1. HERO SECTION (Full-Screen Photography Visual, Strong Headline, CTAs) */}
+      <section className="relative flex min-h-[92vh] sm:min-h-[95vh] items-center justify-center overflow-hidden">
+        {/* Large photography visual background - clearly visible while maintaining cinematic dark atmosphere */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=85"
             alt="Hero Cinematic Photography"
-            className="h-full w-full object-cover object-center brightness-60 scale-105 transition-transform duration-1000 ease-out"
+            className="h-full w-full object-cover object-center brightness-[0.74] sm:brightness-[0.78] scale-105 transition-transform duration-1000 ease-out"
           />
-          {/* Gradient overlays for contrast and readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10] via-[#0c0d10]/50 to-black/60" />
-          <div className="absolute inset-0 bg-radial-at-c from-transparent via-[#0c0d10]/40 to-[#0c0d10]/90" />
+          {/* Subtle cinematic gradient overlays: preserves photo luminosity while ensuring text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10] via-[#0c0d10]/40 to-black/50" />
+          <div className="absolute inset-0 bg-radial-at-c from-transparent via-transparent to-[#0c0d10]/70" />
         </div>
 
         {/* Hero Content Box */}
-        <div className="relative z-10 mx-auto max-w-5xl px-4 py-24 text-center sm:px-6 lg:px-8">
-          <div className="inline-flex items-center space-x-2 rounded-full border border-[#d4af37]/30 bg-black/40 px-4 py-1.5 backdrop-blur-md">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 py-20 sm:py-28 text-center sm:px-6 lg:px-8">
+          <div className="inline-flex items-center space-x-2 rounded-full border border-[#d4af37]/40 bg-black/50 px-4 py-1.5 backdrop-blur-md shadow-lg shadow-black/40">
             <Sparkles className="h-3.5 w-3.5 text-[#d4af37]" />
             <span className="text-xs font-semibold tracking-widest text-[#d4af37] uppercase">
-              Fine-Art & Editorial Storytelling
+              Fine-Art &amp; Editorial Storytelling
             </span>
           </div>
 
-          <h1 className="mt-6 font-serif text-4xl font-bold tracking-tight text-white sm:text-6xl md:text-7xl lg:leading-[1.15]">
+          <h1 className="mt-6 font-serif text-4xl font-bold tracking-tight text-white drop-shadow-lg sm:text-6xl md:text-7xl lg:text-[4.75rem] lg:leading-[1.12]">
             Capturing Timeless Stories <br />
-            <span className="italic font-normal text-[#e6ca65]">Through Light and Emotion</span>
+            <span className="italic font-normal text-[#e6ca65] drop-shadow">Through Light and Emotion</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base font-light leading-relaxed text-slate-200 drop-shadow sm:text-lg md:text-xl">
             Dedicated to authentic memories, cinematic composition, and effortless poise. From intimate vows in Provence to grand metropolitan galas.
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
             <button
               id="hero-book-now-btn"
               onClick={() => setCurrentPage('booking')}
-              className="flex w-full items-center justify-center space-x-2 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#b38c20] px-8 py-4 text-sm font-bold tracking-wider text-black uppercase shadow-xl shadow-[#d4af37]/20 transition-all hover:brightness-110 active:scale-95 sm:w-auto"
+              className="group flex w-full items-center justify-center space-x-2.5 rounded-xl bg-gradient-to-r from-[#d4af37] via-[#c59e2b] to-[#b38c20] px-8 py-4 text-sm font-bold tracking-wider text-black uppercase shadow-xl shadow-[#d4af37]/25 transition-all hover:brightness-110 active:scale-95 sm:w-auto"
             >
-              <Calendar className="h-4 w-4 text-black" />
+              <Calendar className="h-4 w-4 text-black transition-transform group-hover:scale-110" />
               <span>Book Your Session</span>
             </button>
 
             <button
               id="hero-explore-portfolio-btn"
               onClick={() => setCurrentPage('gallery')}
-              className="flex w-full items-center justify-center space-x-2 rounded-xl border border-white/20 bg-black/40 px-8 py-4 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:border-[#d4af37] hover:bg-black/60 sm:w-auto"
+              className="group flex w-full items-center justify-center space-x-2.5 rounded-xl border border-white/25 bg-black/45 px-8 py-4 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-[#d4af37] hover:bg-black/70 active:scale-95 sm:w-auto"
             >
               <span>Explore Portfolio</span>
-              <ArrowRight className="h-4 w-4 text-[#d4af37]" />
+              <ArrowRight className="h-4 w-4 text-[#d4af37] transition-transform group-hover:translate-x-1" />
             </button>
           </div>
 
           {/* Highlights strip */}
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-300">
+          <div className="mt-14 inline-flex flex-wrap items-center justify-center gap-4 sm:gap-6 rounded-full border border-white/10 bg-black/35 px-6 py-2.5 backdrop-blur-sm text-xs text-slate-300">
             <span className="flex items-center space-x-1.5">
               <CheckCircle2 className="h-4 w-4 text-[#d4af37]" />
-              <span>Full Commercial & Personal Rights</span>
+              <span>Full Commercial &amp; Personal Rights</span>
             </span>
             <span className="hidden sm:inline text-slate-600">•</span>
             <span className="flex items-center space-x-1.5">

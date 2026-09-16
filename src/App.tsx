@@ -94,6 +94,7 @@ export default function App() {
         currentUser={currentUser}
         onLogout={handleLogout}
         onOpenGuide={() => setIsGuideOpen(true)}
+        onOpenDbModal={() => setIsDbSettingsOpen(true)}
       />
 
       {/* Main Content Router */}
@@ -159,7 +160,7 @@ export default function App() {
           />
         )}
 
-        {(currentPage === 'customer-dashboard' || currentPage === 'customer-bookings') && (
+        {(currentPage === 'customer-dashboard' || currentPage === 'customer-bookings' || currentPage === 'customer-profile') && (
           currentUser ? (
             <CustomerDashboardView
               currentUser={currentUser}
@@ -175,7 +176,7 @@ export default function App() {
           )
         )}
 
-        {currentPage === 'admin-dashboard' && (
+        {(currentPage === 'admin-dashboard' || currentPage === 'admin-bookings' || currentPage === 'admin-gallery' || currentPage === 'admin-categories' || currentPage === 'admin-services') && (
           currentUser?.role === 'admin' ? (
             <AdminDashboardView
               currentUser={currentUser}
@@ -184,6 +185,8 @@ export default function App() {
               galleryImages={galleryImages}
               setCurrentPage={navigateTo}
               onRefreshData={loadAppData}
+              onOpenGuide={() => setIsGuideOpen(true)}
+              onOpenDbModal={() => setIsDbSettingsOpen(true)}
             />
           ) : (
             <AuthView
@@ -199,6 +202,7 @@ export default function App() {
       <Footer
         setCurrentPage={navigateTo}
         onOpenGuide={() => setIsGuideOpen(true)}
+        onOpenDbModal={() => setIsDbSettingsOpen(true)}
       />
 
       {/* Lightbox Modal */}

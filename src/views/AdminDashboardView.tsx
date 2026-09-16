@@ -20,7 +20,9 @@ import {
   Sparkles,
   FileText,
   Save,
-  X
+  X,
+  HelpCircle,
+  Database
 } from 'lucide-react';
 import { 
   UserProfile, 
@@ -39,6 +41,8 @@ interface AdminDashboardViewProps {
   galleryImages: GalleryImage[];
   setCurrentPage: (page: PageView) => void;
   onRefreshData: () => void;
+  onOpenGuide?: () => void;
+  onOpenDbModal?: () => void;
 }
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
@@ -47,7 +51,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   services,
   galleryImages,
   setCurrentPage,
-  onRefreshData
+  onRefreshData,
+  onOpenGuide,
+  onOpenDbModal
 }) => {
   // Guard check: ensure role is admin
   if (currentUser.role !== 'admin') {
@@ -239,10 +245,30 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
 
           {/* Quick Action Navigation */}
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenGuide && (
+              <button
+                id="admin-open-guide-btn"
+                onClick={onOpenGuide}
+                className="flex items-center space-x-1.5 rounded-xl border border-[#2b3040] bg-[#141720] px-3.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:border-[#d4af37]/40 hover:text-white"
+              >
+                <HelpCircle className="h-3.5 w-3.5 text-[#d4af37]" />
+                <span>Setup &amp; DB Guide</span>
+              </button>
+            )}
+            {onOpenDbModal && (
+              <button
+                id="admin-open-db-btn"
+                onClick={onOpenDbModal}
+                className="flex items-center space-x-1.5 rounded-xl border border-[#2b3040] bg-[#141720] px-3.5 py-2 text-xs font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+              >
+                <Database className="h-3.5 w-3.5 text-slate-400" />
+                <span>Database Settings</span>
+              </button>
+            )}
             <button
               onClick={() => setCurrentPage('home')}
-              className="rounded-xl border border-slate-700 bg-[#12151e] px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+              className="rounded-xl border border-slate-700 bg-[#12151e] px-4 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-slate-500 hover:text-white"
             >
               Exit to Live Site
             </button>
