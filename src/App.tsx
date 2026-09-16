@@ -208,7 +208,9 @@ export default function App() {
       {/* Lightbox Modal */}
       <LightboxModal
         image={lightboxImage}
+        images={galleryImages}
         onClose={() => setLightboxImage(null)}
+        onNavigate={(img) => setLightboxImage(img)}
       />
 
       {/* In-App Project Setup & Deployment Guide Modal */}
